@@ -7,6 +7,9 @@ PARSER_BEGIN(Calculadora)
 
 public class Calculadora
 {
+
+ java.util.ArrayList < TablaSimbolos > tablaSimbolos = new java.util.ArrayList < TablaSimbolos > ();	
+  
   public static void main(String args []) throws ParseException
   {
     try
@@ -46,6 +49,10 @@ TOKEN :
 | < RBR : (")") >
 | < SEP : (";") >
 | < INT : ([ "0"-"9" ])+ >
+| < STRING : "string" >
+| < INTEGER : "int" >
+| < IGUALACION : "=" >
+| < CADENA :"\""(~["\""])*"\"" >
 | < IDENTIFICADOR : ([ "a"-"z" ])+ >
 | < FIN : "?" >
 }
@@ -63,9 +70,42 @@ void calculate() :
   
 }
 {
-  sentencia() <FIN >| < IDENTIFICADOR > < FIN >
-
+  ( instruccion() ) * < FIN >
 }
+
+
+void instruccion():
+{}
+{
+  declaracion() | asignacion() | sentencia() 
+}
+
+
+void declaracion():
+{}
+{
+  tipoDato() < IDENTIFICADOR > <SEP >
+}
+
+void asignacion():
+{}
+{
+  < IDENTIFICADOR ><IGUALACION > tipoAsignacion() <SEP>
+}
+
+void tipoAsignacion():
+{}
+{
+  expr()|<CADENA >| < IDENTIFICADOR >
+}
+
+void tipoDato():
+{}
+{
+  < STRING >|< INTEGER >
+}
+  
+
 void sentencia(): {int result; }
 {
   result = expr(){ System.out.println("El resultado es:"+ result); } < SEP > [ sentencia()]

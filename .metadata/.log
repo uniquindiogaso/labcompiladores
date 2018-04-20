@@ -862,3 +862,9 @@ java.io.FileNotFoundException: C:\Users\gusta\.m2\repository\.cache\m2e\1.7.0\05
 	at org.eclipse.m2e.core.internal.index.nexus.NexusIndexManager$1.run(NexusIndexManager.java:656)
 	at org.eclipse.m2e.core.internal.index.nexus.IndexUpdaterJob.run(IndexUpdaterJob.java:72)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+!ENTRY org.eclipse.jface.text 2 0 2018-04-20 15:13:53.142
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.number'
+
+!ENTRY org.eclipse.jface.text 2 0 2018-04-20 15:13:53.154
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'

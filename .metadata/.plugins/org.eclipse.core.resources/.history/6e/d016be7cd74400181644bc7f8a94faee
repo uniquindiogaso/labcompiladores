@@ -1,0 +1,16 @@
+
+public class TablaSimbolos {
+
+	private String tipo;
+	private Object valor;
+	private String lexema;
+	
+	public TablaSimbolos(String tipo, Object valor, String lexema) {
+		super();
+		this.tipo = tipo;
+		this.valor = valor;
+		this.lexema = lexema;
+	}
+	
+	
+}

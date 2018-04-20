@@ -1,0 +1,7 @@
+
+public class TablaSimbolos {
+
+	private String tipo;
+	private Object valor;
+	private String lexema;
+}
