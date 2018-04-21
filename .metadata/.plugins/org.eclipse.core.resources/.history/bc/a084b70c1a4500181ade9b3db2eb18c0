@@ -1,0 +1,9 @@
+package snippet;
+
+public class Snippet {
+	public static void main(String[] args) {
+		/LabSemantico1/src/TablaSimbolos.java
+		/LabSemantico1/src/Calculadora.jj
+	}
+}
+

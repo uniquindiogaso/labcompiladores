@@ -1,0 +1,255 @@
+options
+{
+  STATIC = false;
+}
+
+PARSER_BEGIN(Calculadora)
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class Calculadora
+{ 
+
+ static java.util.ArrayList < TablaSimbolos > tablaSimbolos = new java.util.ArrayList < TablaSimbolos > ();	
+ static java.util.ArrayList < Integer > resultados = new ArrayList< Integer >(); 
+  public static void main(String args []) throws ParseException
+  {
+    try
+    {
+      System.out.println("Ingrese el c\u00f3digo a analizar:");
+      Calculadora calc = new Calculadora(System.in);
+      calc.calculate();
+	
+	  for(int r : resultados){
+			System.out.println("Resultado: " + r);
+		}
+		
+      System.out.println("Se ha compilado con \u00e9xito");
+     
+    }
+    catch (ParseException e)
+    {
+      System.err.println("Se han encontrado errores");
+      System.err.println(e.getMessage());
+    }
+  }
+
+  	boolean existe(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void actValor(String lexema, Object valor){
+		for(int i = 0; i < tablaSimbolos.size() ; i++){
+			if ( tablaSimbolos.get(i).getLexema().equals(lexema) ){
+				tablaSimbolos.get(i).setValor(valor);				
+			}
+		}
+	}
+
+	boolean esNumero(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				if( ts.getValor() instanceof Integer){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	int obtenerValor(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				return Integer.valueOf(ts.getValor().toString());
+			}
+		}
+		return -1;
+	}
+
+	boolean tieneValor(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				return ts.getValor() != null;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	boolean esValido(String lexema){
+		boolean existe  = existe(lexema);
+		boolean tieneValor = tieneValor(lexema);
+		boolean numero = esNumero(lexema);
+
+		return existe && tieneValor &&  numero;
+	}
+		
+}
+
+PARSER_END(Calculadora)
+
+/*Sección de Tokens*/
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  < ADD : ("+") >
+| < SUB : ("-") >
+| < MUL : ("*") >
+| < DIV : ("/") >
+| < LBR : ("(") >
+| < RBR : (")") >
+| < SEP : (";") >
+| < INT : ([ "0"-"9" ])+ >
+| < STRING : "string" >
+| < INTEGER : "int" >
+| < IGUALACION : "=" >
+| < CADENA :"\""(~["\""])*"\"" >
+| < IDENTIFICADOR : ([ "a"-"z" ])+ >
+| < FIN : "?" >
+}
+
+/*Sección Gramatica y Semantica
+<calculate> ::= <expr>
+<expr>::= <term> "+" <expr> | <term> - <expr> | <term>
+<term>::= <factor> "*" <term> | <factor> "/" <term> | <factor>
+<factor> ::= <numero> | "(" < expr> ")"
+*/
+
+ 
+void calculate() :
+{
+  
+}
+{
+  ( instruccion() ) * < FIN >
+}
+
+
+void instruccion():
+{}
+{
+  declaracion() | LOOKAHEAD(2) asignacion() |  LOOKAHEAD(2) sentencia()
+}
+
+
+void declaracion():
+{String tipo; Token pieza;}
+{
+  tipo = tipoDato() pieza = < IDENTIFICADOR > <SEP > {tablaSimbolos.add(new TablaSimbolos(tipo, null, pieza.image) ); }
+}
+
+void asignacion():
+{Token pieza; Object valor;}
+{
+  pieza = < IDENTIFICADOR ><IGUALACION > valor = tipoAsignacion() <SEP> {
+
+	if (existe(pieza.image)) {
+		actValor(pieza.image,valor);	
+	}
+
+  }
+}
+
+Object tipoAsignacion():
+{Object res;}
+{
+  res = expr() { return res;}|res = <CADENA > { return res; }
+}
+
+String tipoDato():
+{}
+{
+  < STRING > { return "String"; }|< INTEGER > { return "Int";}
+}
+  
+
+void sentencia(): {int result; }
+{
+  result = expr(){ resultados.add(result); } < SEP > [ sentencia()]
+} 
+int expr() :
+{
+  int a;
+  int b;
+  int result = 0;
+}
+{
+  (
+    a = term()
+    {
+      result += a;
+    }
+    (
+      < ADD > b = term()
+      {
+        result += b;
+      }
+    | < SUB > b = term()
+      {
+        result -= b;
+      }
+    )*
+  )
+  {    
+    return result;
+  }
+}
+
+int term() :
+{
+  int a;
+  int b;
+  int result = 0;
+}
+{
+  a = factor()
+  {
+    result = a;
+  }
+  (
+    < MUL > b = factor()
+    {
+      result *= b;
+    }
+  | < DIV > b = factor()
+    {
+      result /= b;
+    }
+  )*
+  {
+    return result;
+  }
+}
+
+int factor() :
+{
+  Token t;
+  int result;
+}
+{
+ 	 t = < INT >  { return Integer.parseInt(t.image); }
+	| < LBR > result = expr() < RBR >  {   return result;  }
+	| t = < IDENTIFICADOR > {
+
+		//OJO!!!.... si existe ... si es entero .... si tiene valor
+		if( esValido(t.image) ) {
+				return obtenerValor(t.image);
+		 }else {		   	
+		   	throw new UnsupportedOperationException("No es posible realizar la operacion");
+
+	   	}
+	} 
+}

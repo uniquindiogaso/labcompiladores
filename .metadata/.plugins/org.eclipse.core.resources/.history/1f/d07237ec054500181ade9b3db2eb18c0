@@ -1,0 +1,101 @@
+import java.util.ArrayList;
+
+public class TablaSimbolos {
+
+	private String tipo;
+	private Object valor;
+	private String lexema;
+	
+	ArrayList<TablaSimbolos> tablaSimbolos = new ArrayList<>();
+	
+	public TablaSimbolos(String tipo, Object valor, String lexema) {
+		super();
+		this.tipo = tipo;
+		this.valor = valor;
+		this.lexema = lexema;
+	}
+	
+	public void test(){
+		ArrayList<TablaSimbolos> tablaSimbolos = new ArrayList<>();
+		tablaSimbolos.add(new TablaSimbolos("tpo", "valor", "Lexema") );
+		
+		System.out.println("Tamanio Tabla Simbolos " + tablaSimbolos.size());
+		
+		for(TablaSimbolos ts : tablaSimbolos){
+			System.out.println(ts.getTipo() + " " + ts.getLexema());
+		}
+	}
+	
+	boolean existe(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	void actValor(String lexema, Object valor){
+		for(int i = 0; i <= tablaSimbolos.size() ; i++){
+			if ( tablaSimbolos.get(i).getLexema().equals(lexema) ){
+				tablaSimbolos.get(i).setValor(valor);
+			}
+		}
+	}
+	
+	boolean esNumero(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				if( ts.getValor() instanceof Integer){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	int obtenerValor(String lexema){
+		for(TablaSimbolos ts : tablaSimbolos){
+			if (lexema.equals(ts.getLexema())){
+				return Integer.valueOf(ts.getValor().toString());
+			}
+		}
+		return 0;
+	}
+	
+	
+	boolean esValido(String lexema){
+		
+		
+		return false;
+	}
+	
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public Object getValor() {
+		return valor;
+	}
+
+	public void setValor(Object valor) {
+		this.valor = valor;
+	}
+
+	public String getLexema() {
+		return lexema;
+	}
+
+	public void setLexema(String lexema) {
+		this.lexema = lexema;
+	}
+	
+	
+	
+	
+}
